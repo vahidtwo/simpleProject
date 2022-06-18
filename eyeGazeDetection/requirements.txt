@@ -1,7 +1,7 @@
 sip==4.19.8
 beepy==1.0.7
 opencv-python==4.2.0.34
-numpy==1.18.3
+numpy==1.21.0
 pyttsx3==2.87
 PyQt5==5.14.2
 PyQt5-sip==12.7.2
