@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  dev.task:
+    restart: always
+    container_name: "dev.task"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: product.Dockerfile
+    volumes:
+      - /opt/task/static:/srv/static
+      - /opt/task/media:/srv/media
+      - /opt/task/var:/srv/var
+    network_mode: host
+    working_dir: /srv
+
+  dev.statics:
+    image: nginx:alpine
+    restart: always
+    container_name: "dev-statics"
+    network_mode: host
+    volumes:
+      - /opt/task/static:/usr/share/nginx/html/static:ro
+      - /opt/task/media:/usr/share/nginx/html/media:ro
+      - ./infrastructure/third-party/static-handling/nginx:/etc/nginx
