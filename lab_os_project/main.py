@@ -2,7 +2,9 @@ import threading
 import time
 from colorama import Fore
 
-shop_cap = None
+x = int(input("نرخ ورود مشتری در ثانیه را وارد کنید:     "))
+y = float(input("مدت زمان خرید مشتریان را وارد کنید:       "))
+shop_cap = threading.Semaphore(x)
 input_semaphor = threading.Semaphore(2)
 output_door_semaphor = threading.Semaphore(1)
 store_cash_register1_semaphor = threading.Semaphore(1)
@@ -26,7 +28,7 @@ def min_store_cash_register():
     return m
 
 
-def shopping(x, y):
+def shopping(y):
     current_thread = threading.current_thread()
     input_semaphor.acquire()
     input_semaphor.release()
@@ -53,13 +55,12 @@ def shopping(x, y):
             store_cash_register2.remove(current_thread)
         )
     else:
-        store_cash_register3.append(threading.current_thread())
+        store_cash_register3.append(current_thread)
         store_cash_register3_semaphor.acquire()
         time.sleep(0.05)
         store_cash_register3_semaphor.release()
-        output_door_pend.append(
-            store_cash_register3.remove(current_thread)
-        )
+        store_cash_register3.remove(current_thread)
+        output_door_pend.append(current_thread)
     output_door_semaphor.acquire()
     time.sleep(0.05)
     output_door_semaphor.release()
@@ -88,24 +89,15 @@ def prr():
         time.sleep(1)
 
 
-def main(x, y):
-    threading.Thread(target=pr).start()
-    threading.Thread(target=prr).start()
+threading.Thread(target=pr).start()
+threading.Thread(target=prr).start()
 
-    for _ in range(100):
-        for _ in range(x):
-            th = threading.Thread(target=shopping, args=(x, y))
-            input_door_pend.append(th)
-            thread_pool.append(th)
-            th.start()
-        time.sleep(1)
-    for th in thread_pool:
-        th.join()
-    print(Fore.BLUE + f"end round with x:{x} y:{y}")
+for _ in range(100):
+    for _ in range(x):
+        th = threading.Thread(target=shopping, args=(y,))
+        input_door_pend.append(th)
+        th.start()
+    time.sleep(1)
+print(Fore.BLUE + f"end round with x:{x} y:{y}")
 
 
-if __name__ == "__main__":
-    x = int(input("نرخ ورود مشتری در ثانیه را وارد کنید:     "))
-    y = float(input("مدت زمان خرید مشتریان را وارد کنید:       "))
-    shop_cap = threading.Semaphore(x)
-    main(x, y)
